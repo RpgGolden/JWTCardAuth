@@ -9,7 +9,7 @@ var app = express.Router();
 Employees.hasMany(Attendances);
 Attendances.belongsTo(Employees, { as: "Employee" });
 
-app.get("/", async (req, res) => {
+app.get("/", jwtCheck, async (req, res) => {
   try {
     const {
       _start = 0,
