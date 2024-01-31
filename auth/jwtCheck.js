@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const jwtSecretKey = process.env.JWT_SECRET || 'default_secret_key';
+const jwtSecretKey = 'your_secret_key_here';
 
 //Проверяем, есть ли у нас токен в заголовке
 
@@ -22,7 +22,7 @@ const authToken = (req, res, next) => {
         const decoded = jwt.verify(token, jwtSecretKey);
         req.user = decoded;
 
-        // console.log('Decoded token:', decoded);
+        console.log('Decoded token:', decoded);
 
         // Продолжаем выполнение следующего middleware
         next();

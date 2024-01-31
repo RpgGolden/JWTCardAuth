@@ -4,7 +4,10 @@ const bodyParser = require('body-parser');
 const { Sequelize, DataTypes } = require('sequelize');
 const cors = require('cors');
 const app = express();
-const jwtCheck = require("./auth/jwtCheck");
+const jwtCheck = require("./auth/jwtCheck")
+const Roles = require('./roles/roles');
+const checkRole = require('./roles/checkRoles');
+
 const port = 5000;
 
 var empRouter = require('./employees');
@@ -19,7 +22,7 @@ Attendances.belongsTo(Employees, { as: "Employee" });
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.post("/update", jwtCheck, async (request, response) => {
+app.post("/update", jwtCheck, checkRole([Roles.RFID]), async (request, response) => {
   if (!request.body || !request.body.id) return response.sendStatus(400);
 
   console.log(request.body);

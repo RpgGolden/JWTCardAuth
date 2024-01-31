@@ -5,6 +5,9 @@ const Attendances = require("./db_Atten")(sequelize);
 var express = require("express");
 const jwtCheck = require("./auth/jwtCheck");
 const { generateToken } = require("./auth/jwtCreate");
+const Roles = require('./roles/roles');
+const checkRole = require('./roles/checkRoles');
+
 var app = express.Router();
 
 app.get("/", jwtCheck, async (req, res) => {
@@ -42,7 +45,7 @@ app.get("/", jwtCheck, async (req, res) => {
   }
 });
 
-app.post("/", async (req, res) => {
+app.post("/",checkRole([Roles.ADMIN, Roles.USER]), async (req, res) => {
   try {
     const newEmployeeData = req.body;
 
@@ -57,7 +60,7 @@ app.post("/", async (req, res) => {
   }
 });
 
-app.get("/:id", jwtCheck, async (req, res) => {
+app.get("/:id", jwtCheck, checkRole([Roles.ADMIN, Roles.USER]), async (req, res) => {
   try {
     const employeeId = req.params.id;
     const employee = await Employees.findByPk(employeeId);
@@ -73,7 +76,7 @@ app.get("/:id", jwtCheck, async (req, res) => {
   }
 });
 
-app.put("/:id", jwtCheck, async (req, res) => {
+app.put("/:id", jwtCheck,checkRole([Roles.ADMIN]), async (req, res) => {
   try {
     const employeeId = req.params.id;
     const updatedData = req.body;
@@ -99,7 +102,7 @@ app.put("/:id", jwtCheck, async (req, res) => {
   }
 });
 
-app.delete("/:id", jwtCheck, async (req, res) => {
+app.delete("/:id", jwtCheck, checkRole([Roles.ADMIN]), async (req, res) => {
   try {
     const employeeId = req.params.id;
 
@@ -129,6 +132,7 @@ app.post("/login", async (req, res) => {
       res.status(401).json({ error: "Invalid credentials" });
     }
 
+    // Теперь включаем роли в токен при его генерации
     const token = generateToken(employee);
 
     res.json({ data: employee, token });

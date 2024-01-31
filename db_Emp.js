@@ -26,7 +26,12 @@ module.exports = (sequelize) => {
     },
     birthday: {
       type: DataTypes.DATEONLY,
-    }
+    },
+    roles: {
+      type: DataTypes.STRING, // или другой тип данных
+      allowNull: false,
+      defaultValue: 'User',
+    },
   });
 
   return Employees;

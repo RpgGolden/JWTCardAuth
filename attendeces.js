@@ -4,12 +4,14 @@ const Attendances = require("./db_Atten")(sequelize);
 const Employees = require("./db_Emp")(sequelize);
 const jwtCheck = require("./auth/jwtCheck");
 var express = require("express");
+const Roles = require('./roles/roles');
+const checkRole = require('./roles/checkRoles');
 var app = express.Router();
 
 Employees.hasMany(Attendances);
 Attendances.belongsTo(Employees, { as: "Employee" });
 
-app.get("/", jwtCheck, async (req, res) => {
+app.get("/", jwtCheck, checkRole([Roles.ADMIN, Roles.USER]), async (req, res) => {
   try {
     const {
       _start = 0,
@@ -70,7 +72,7 @@ app.get("/", jwtCheck, async (req, res) => {
   }
 });
 
-app.get("/online", jwtCheck, async (req, res) => {
+app.get("/online", jwtCheck,checkRole([Roles.ADMIN, Roles.USER]), async (req, res) => {
   try {
     const {
       _start = 0,
@@ -133,7 +135,7 @@ app.get("/online", jwtCheck, async (req, res) => {
   }
 });
 
-app.delete("/:id", jwtCheck, async (req, res) => {
+app.delete("/:id", jwtCheck, checkRole([Roles.ADMIN]), async (req, res) => {
   try {
     const attenId = req.params.id;
 
@@ -154,7 +156,7 @@ app.delete("/:id", jwtCheck, async (req, res) => {
   }
 });
 
-app.post("/", jwtCheck, async (req, res) => {
+app.post("/", jwtCheck, checkRole([Roles.ADMIN]), async (req, res) => {
   try {
     const newAttenData = req.body;
 
